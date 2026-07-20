@@ -16,7 +16,7 @@ Zeta Room Exporter는 사용자가 현재 열어 둔 Zeta AI 대화방을 JSON �
 
 - `cookies`: 현재 로그인된 사용자의 Zeta 대화 내보내기 요청을 인증합니다.
 - `activeTab`: 사용자가 열어 둔 Zeta 대화방의 ID를 확인합니다.
-- `downloads`: 내보낸 JSON 파일을 사용자의 컴퓨터에 저장합니다.
+- `downloads`: 내보낸 JSON/TXT 파일을 사용자의 컴퓨터에 저장합니다.
 
 ## 문의
 
