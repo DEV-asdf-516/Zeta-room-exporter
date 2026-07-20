@@ -2,7 +2,7 @@
 
 시행일: 2026년 7월 19일
 
-Zeta Room Exporter는 사용자가 현재 열어 둔 Zeta AI 대화방을 JSON 파일로 저장할 수 있게 하는 Chrome 확장 프로그램입니다.
+Zeta Room Exporter는 사용자가 현재 열어 둔 Zeta AI 대화방을 JSON 또는 텍스트 파일로 저장할 수 있게 하는 Chrome 확장 프로그램입니다.
 
 ## 수집 및 전송
 
