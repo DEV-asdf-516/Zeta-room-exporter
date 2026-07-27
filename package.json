@@ -1,0 +1,8 @@
+{
+  "name": "zeta-room-exporter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}

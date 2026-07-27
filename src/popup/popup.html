@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zeta Room Exporter</title>
+  <style>
+    html {
+      overflow: hidden;
+    }
+
+    body {
+      box-sizing: border-box;
+      width: 300px;
+      margin: 0;
+      padding: 16px;
+      overflow: hidden;
+      color: #1e293b;
+      font: 14px/1.45 system-ui, sans-serif;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 17px;
+    }
+
+    #exportButton {
+      width: 100%;
+      border: 0;
+      border-radius: 7px;
+      padding: 10px 12px;
+      color: white;
+      background: #2563eb;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    #exportButton:disabled {
+      cursor: wait;
+      background: #94a3b8;
+    }
+
+    .dropdown {
+      position: relative;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .dropdown-trigger {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 36px;
+      box-sizing: border-box;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      padding: 7px 13px;
+      color: #1e293b;
+      background: #fff;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .dropdown-trigger:hover,
+    .dropdown-trigger[aria-expanded="true"] {
+      border-color: #60a5fa;
+    }
+
+    .dropdown-trigger:disabled {
+      cursor: default;
+      color: #64748b;
+      background: #f8fafc;
+    }
+
+    .dropdown-trigger > span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dropdown-arrow {
+      flex: 0 0 auto;
+      width: 7px;
+      height: 7px;
+      margin-left: auto;
+      margin-right: 3px;
+      border-right: 2px solid #64748b;
+      border-bottom: 2px solid #64748b;
+      transform: rotate(45deg) translateY(-2px);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      left: 0;
+      z-index: 1;
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      background: #fff;
+      box-shadow: 0 8px 18px rgb(15 23 42 / 14%);
+    }
+
+    .dropdown-menu[hidden] {
+      display: none;
+    }
+
+    .dropdown-option {
+      display: block;
+      width: 100%;
+      border: 0;
+      padding: 9px 13px;
+      color: #1e293b;
+      background: #fff;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .dropdown-option:hover,
+    .dropdown-option[aria-selected="true"] {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .range-menu {
+      position: relative;
+      top: auto;
+      right: auto;
+      left: auto;
+      max-height: none;
+      overflow: visible;
+      margin: 8px 0 16px;
+      padding: 10px;
+    }
+
+    .range-mode {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .range-mode-button {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 7px;
+      color: #475569;
+      background: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .range-mode-button[aria-pressed="true"] {
+      border-color: #60a5fa;
+      color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    .range-instruction {
+      margin: 10px 2px 7px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .bookmark-list {
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      scrollbar-color: #94a3b8 transparent;
+      scrollbar-gutter: stable;
+      scrollbar-width: thin;
+    }
+
+    .bookmark-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .bookmark-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .bookmark-list::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: #94a3b8;
+    }
+
+    .bookmark-list::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+
+    .bookmark-option {
+      position: relative;
+      display: block;
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 8px 44px 8px 10px;
+      color: #334155;
+      background: white;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .bookmark-option:last-child {
+      border-bottom: 0;
+    }
+
+    .bookmark-option:hover,
+    .bookmark-option.in-range {
+      background: #eff6ff;
+    }
+
+    .bookmark-option.endpoint {
+      color: #1d4ed8;
+      background: #dbeafe;
+    }
+
+    .bookmark-title,
+    .bookmark-preview {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bookmark-title {
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .bookmark-preview {
+      margin-top: 2px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .bookmark-badge {
+      position: absolute;
+      top: 50%;
+      right: 9px;
+      color: #2563eb;
+      font-size: 11px;
+      font-weight: 700;
+      transform: translateY(-50%);
+    }
+
+    .range-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 9px;
+    }
+
+    .range-footer button {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: #334155;
+      background: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .range-footer .apply-button {
+      border-color: #2563eb;
+      color: white;
+      background: #2563eb;
+    }
+
+    .range-footer .apply-button:disabled {
+      border-color: #cbd5e1;
+      color: #94a3b8;
+      background: #f1f5f9;
+      cursor: default;
+    }
+
+    #status {
+      min-height: 20px;
+      margin: 10px 0 0;
+      color: #475569;
+      word-break: break-word;
+    }
+
+    #status.error {
+      color: #b91c1c;
+    }
+
+    .field {
+      display: block;
+      margin-bottom: 12px;
+      color: #334155;
+    }
+
+    .field-label {
+      display: block;
+    }
+
+    #jobActions[hidden] {
+      display: none;
+    }
+
+    #jobActions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .secondary-button {
+      flex: 1;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      padding: 7px;
+      color: #334155;
+      background: white;
+      font: inherit;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Zeta Room Exporter</h1>
+  <div class="field">
+    <span class="field-label">저장 형식</span>
+    <div class="dropdown" id="formatPicker">
+      <button class="dropdown-trigger" id="formatTrigger" type="button" aria-expanded="false" aria-haspopup="listbox">
+        <span id="formatLabel">JSON</span><span class="dropdown-arrow" aria-hidden="true"></span>
+      </button>
+      <div class="dropdown-menu" id="formatMenu" role="listbox" hidden>
+        <button class="dropdown-option" type="button" role="option" data-value="json" aria-selected="true">JSON</button>
+        <button class="dropdown-option" type="button" role="option" data-value="txt" aria-selected="false">TXT</button>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <span class="field-label">내보낼 범위</span>
+    <div class="dropdown" id="rangePicker">
+      <button class="dropdown-trigger" id="rangeTrigger" type="button" aria-expanded="false" aria-haspopup="dialog">
+        <span id="rangeLabel">전체 대화</span><span class="dropdown-arrow" aria-hidden="true"></span>
+      </button>
+      <div class="dropdown-menu range-menu" id="rangeMenu" role="dialog" aria-label="내보낼 범위 선택" hidden>
+        <div class="range-mode">
+          <button class="range-mode-button" id="allRangeButton" type="button" aria-pressed="true">전체 대화</button>
+          <button class="range-mode-button" id="bookmarkRangeButton" type="button" aria-pressed="false">북마크 범위</button>
+        </div>
+        <div id="bookmarkRangePanel" hidden>
+          <p class="range-instruction" id="rangeInstruction">시작 지점을 선택하세요.</p>
+          <div class="bookmark-list" id="bookmarkList" role="listbox" aria-label="북마크 범위" aria-multiselectable="true"></div>
+        </div>
+        <div class="range-footer">
+          <button id="resetRangeButton" type="button">초기화</button>
+          <button class="apply-button" id="applyRangeButton" type="button">적용</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button id="exportButton" type="button">현재 Room 내보내기</button>
+  <p id="status" role="status"></p>
+  <div id="jobActions" hidden>
+    <button class="secondary-button" id="diagnosticButton" type="button">진단 로그</button>
+    <button class="secondary-button" id="deleteButton" type="button">작업 삭제</button>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+
+</html>

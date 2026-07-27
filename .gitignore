@@ -1,1 +1,5 @@
 icons/icon-master.png
+docs/
+store-assets/
+*.zip
+.DS_Store
